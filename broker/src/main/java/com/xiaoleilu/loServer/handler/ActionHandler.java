@@ -39,6 +39,7 @@ abstract public class ActionHandler extends SimpleChannelInboundHandler<FullHttp
 	protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest) throws Exception {
         Logger.info("Http request whit url {}", fullHttpRequest.uri());
 		final Request request = Request.build(ctx, fullHttpRequest);
+
 		final Response response = Response.build(ctx, request);
 
 		response.setContentType("application/json");
