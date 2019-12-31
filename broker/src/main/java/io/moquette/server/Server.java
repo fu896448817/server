@@ -235,7 +235,7 @@ public class Server {
         AES.init(keys);
 
         LOG.info("Starting Moquette Server. MQTT message interceptors={}", getInterceptorIds(handlers));
-
+        System.out.println("Starting Moquette Server. MQTT message interceptors="+getInterceptorIds(handlers));
         int threadNum = Runtime.getRuntime().availableProcessors() * 2;
         dbScheduler = new ThreadPoolExecutorWrapper(Executors.newScheduledThreadPool(threadNum), threadNum, "db");
         imBusinessScheduler = new ThreadPoolExecutorWrapper(Executors.newScheduledThreadPool(threadNum), threadNum, "business");
@@ -249,6 +249,7 @@ public class Server {
 
         final String persistencePath = config.getProperty(BrokerConstants.PERSISTENT_STORE_PROPERTY_NAME);
         LOG.info("Configuring Using persistent store file, path={}", persistencePath);
+        System.out.println("Configuring Using persistent store file, path="+persistencePath);
         m_store = initStore(config, this);
         m_processorBootstrapper = new ProtocolProcessorBootstrapper();
 
@@ -258,6 +259,7 @@ public class Server {
         final ProtocolProcessor processor = m_processorBootstrapper.init(config, handlers, authenticator, authorizator,
             this, m_store);
         LOG.info("Initialized MQTT protocol processor");
+        System.out.println("Initialized MQTT protocol processor");
         if (sslCtxCreator == null) {
             LOG.warn("Using default SSL context creator");
             sslCtxCreator = new DefaultMoquetteSslContextCreator(config);
@@ -266,11 +268,13 @@ public class Server {
         m_processor = processor;
 
         LOG.info("Binding server to the configured ports");
+        System.out.println("Binding server to the configured ports");
         m_acceptor = new NettyAcceptor();
         m_acceptor.initialize(processor, config, sslCtxCreator);
 
 
         LOG.info("Moquette server has been initialized successfully");
+        System.out.println("Moquette server has been initialized successfully");
         m_initialized = configured;
     }
 

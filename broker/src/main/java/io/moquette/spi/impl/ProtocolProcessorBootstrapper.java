@@ -86,7 +86,7 @@ public class ProtocolProcessorBootstrapper {
         };
 
         LOG.info("Configuring message interceptors...");
-
+        System.out.println("Configuring message interceptors...");
         List<InterceptHandler> observers = new ArrayList<>(embeddedObservers);
         String interceptorClassName = props.getProperty(BrokerConstants.INTERCEPT_HANDLER_PROPERTY_NAME);
         if (interceptorClassName != null && !interceptorClassName.isEmpty()) {

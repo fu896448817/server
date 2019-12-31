@@ -37,6 +37,10 @@ public final class BrokerConstants {
             + DEFAULT_MOQUETTE_STORE_MAP_DB_FILENAME;
     public static final String WEB_SOCKET_PORT_PROPERTY_NAME = "websocket_port";
     public static final String WSS_PORT_PROPERTY_NAME = "secure_websocket_port";
+    public static final String WEB_SOCKET_PATH_PROPERTY_NAME = "websocket_path";
+    public static final String WEBSOCKET_PATH = "/";
+//    public static final String WEBSOCKET_PATH = "/mqtt";
+    public static final String WEB_SOCKET_MAX_FRAME_SIZE_PROPERTY_NAME = "websocket_max_frame_size";
     public static final String SSL_PORT_PROPERTY_NAME = "ssl_port";
     public static final String JKS_PATH_PROPERTY_NAME = "jks_path";
     public static final String KEY_STORE_PASSWORD_PROPERTY_NAME = "key_store_password";
@@ -47,9 +51,9 @@ public final class BrokerConstants {
     public static final String DB_AUTHENTICATOR_QUERY = "authenticator.db.query";
     public static final String DB_AUTHENTICATOR_DIGEST = "authenticator.db.digest";
     public static final int PORT = 1883;
-    public static final int WEBSOCKET_PORT = 8080;
+    public static final int WEBSOCKET_PORT = 8083;
     public static final String DISABLED_PORT_BIND = "disabled";
-    public static final String HOST = "0.0.0.0";
+    public static final String HOST = "192.168.6.196";
     public static final String NEED_CLIENT_AUTH = "need_client_auth";
     public static final String HAZELCAST_CONFIGURATION = "hazelcast.configuration";
     public static final String HAZELCAST_CLIENT_IP = "hazelcast.client.ip";

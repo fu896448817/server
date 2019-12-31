@@ -58,6 +58,9 @@ public class LoServer {
 		// Configure the server.
 		final EventLoopGroup bossGroup = new NioEventLoopGroup(2);
 		final EventLoopGroup workerGroup = new NioEventLoopGroup();
+		
+		//final EventLoopGroup adminBossGroup = new NioEventLoopGroup(2);
+		//final EventLoopGroup adminWorkerGroup = new NioEventLoopGroup();
 
         registerAllAction();
 
@@ -84,7 +87,7 @@ public class LoServer {
 				});
 			
 			channel = b.bind(port).sync().channel();
-
+            System.out.println("start local server success, port:"+port);
 
             adminB.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
@@ -106,6 +109,7 @@ public class LoServer {
                 });
 
             adminChannel = adminB.bind(adminPort).sync().channel();
+            System.out.println("start admin server success, port:"+adminPort);
 			Logger.info("***** Welcome To LoServer on port [{},{}], startting spend {}ms *****", port, adminPort, DateUtil.spendMs(start));
 		} finally {
 

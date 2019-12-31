@@ -49,7 +49,7 @@ public class RouteAction extends Action {
                 b = true;
             }
 
-            final boolean base64Response = b;
+            final boolean base64Response = true;
 
             byte[] bytes = Utils.readBytesAndRewind(fullHttpRequest.content());
 
@@ -147,6 +147,7 @@ public class RouteAction extends Action {
 
     private void sendResponse(Response response, ErrorCode errorCode, byte[] contents, boolean base64Response) {
         response.setStatus(HttpResponseStatus.OK);
+        response.setCharset("UTF-8");
         if (contents == null) {
             ByteBuf ackPayload = Unpooled.buffer();
             ackPayload.ensureWritable(1).writeByte(errorCode.getCode());
