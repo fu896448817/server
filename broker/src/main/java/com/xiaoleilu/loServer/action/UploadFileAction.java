@@ -75,6 +75,8 @@ public class UploadFileAction extends Action {
     @Override
     public boolean action(Request r, Response response) {
         if (r.getNettyRequest() instanceof FullHttpRequest) {
+        	
+        	System.out.println(r.toString());
 
             FullHttpRequest request = (FullHttpRequest) r.getNettyRequest();
             String requestId = UUID.randomUUID().toString().replace("-", "");

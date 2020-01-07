@@ -39,6 +39,8 @@ public class RouteAction extends Action {
     @Override
     public boolean action(Request request, Response response) {
         if (request.getNettyRequest() instanceof FullHttpRequest) {
+        	
+        	System.out.println(request.toString());
 
             response.setContentType("application/octet-stream");
             response.setHeader("Access-Control-Allow-Origin", "*");
@@ -49,7 +51,7 @@ public class RouteAction extends Action {
                 b = true;
             }
 
-            final boolean base64Response = true;
+            final boolean base64Response = false;
 
             byte[] bytes = Utils.readBytesAndRewind(fullHttpRequest.content());
 
@@ -159,6 +161,7 @@ public class RouteAction extends Action {
         } else {
             response.setContent(contents);
         }
+        System.out.println(response.toString());
         response.send();
     }
 }

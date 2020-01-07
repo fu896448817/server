@@ -97,21 +97,21 @@ public class ProtocolProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProtocolProcessor.class);
 
-    protected ConnectionDescriptorStore connectionDescriptors;
+    protected ConnectionDescriptorStore connectionDescriptors;  //所有的连接描述符文存储，即clientId与通道之间的映射集合
 
-    private boolean allowAnonymous;
-    private boolean allowZeroByteClientId;
-    private IAuthorizator m_authorizator;
+    private boolean allowAnonymous;  //是否允许匿名连接
+    private boolean allowZeroByteClientId;  //是否允许clientId为空
+    private IAuthorizator m_authorizator;   //对topic的读写权限认证
 
-    private IMessagesStore m_messagesStore;
+    private IMessagesStore m_messagesStore; //retainMessage的存储
 
-    private ISessionsStore m_sessionsStore;
+    private ISessionsStore m_sessionsStore; //session 存储
 
-    private IAuthenticator m_authenticator;
-    private BrokerInterceptor m_interceptor;
+    private IAuthenticator m_authenticator;  //连接时候的鉴权认证
+    private BrokerInterceptor m_interceptor;  //各个层面的拦截器
 
-    public Qos1PublishHandler qos1PublishHandler;
-    private MessagesPublisher messagesPublisher;
+    public Qos1PublishHandler qos1PublishHandler;  //qos1拦截器
+    private MessagesPublisher messagesPublisher;  //消息发布器，当client向某个topic发布完消息后，
 
     private Server mServer;
 

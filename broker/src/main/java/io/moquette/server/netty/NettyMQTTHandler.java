@@ -39,6 +39,8 @@ public class NettyMQTTHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object message) {
         try {
+        	System.out.println(message.toString());
+        	
             if (!(message instanceof MqttMessage)) {
                 LOG.error("Unknown mqtt message type {}, {}", message.getClass().getName(), message);
                 return;

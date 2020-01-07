@@ -35,6 +35,8 @@ public class FileAction extends Action {
 
     @Override
     public boolean action(Request request, Response response) {
+    	System.out.println(request.toString());
+    	
         if (false == Request.METHOD_GET.equalsIgnoreCase(request.getMethod())) {
             response.sendError(HttpResponseStatus.METHOD_NOT_ALLOWED, "Please use GET method to request file!");
             return true;

@@ -37,6 +37,8 @@ public class IMAction extends Action {
     @Override
     public boolean action(Request request, Response response) {
         if (request.getNettyRequest() instanceof FullHttpRequest) {
+        	
+        	System.out.println(request.toString());
 
             FullHttpRequest fullHttpRequest = (FullHttpRequest)request.getNettyRequest();
             byte[] bytes = Utils.readBytesAndRewind(fullHttpRequest.content());

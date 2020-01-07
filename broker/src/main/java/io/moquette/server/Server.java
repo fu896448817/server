@@ -259,7 +259,6 @@ public class Server {
         final ProtocolProcessor processor = m_processorBootstrapper.init(config, handlers, authenticator, authorizator,
             this, m_store);
         LOG.info("Initialized MQTT protocol processor");
-        System.out.println("Initialized MQTT protocol processor");
         if (sslCtxCreator == null) {
             LOG.warn("Using default SSL context creator");
             sslCtxCreator = new DefaultMoquetteSslContextCreator(config);
@@ -268,13 +267,11 @@ public class Server {
         m_processor = processor;
 
         LOG.info("Binding server to the configured ports");
-        System.out.println("Binding server to the configured ports");
         m_acceptor = new NettyAcceptor();
         m_acceptor.initialize(processor, config, sslCtxCreator);
 
 
         LOG.info("Moquette server has been initialized successfully");
-        System.out.println("Moquette server has been initialized successfully");
         m_initialized = configured;
     }
 
@@ -282,6 +279,7 @@ public class Server {
         LOG.info("Initializing messages and sessions stores...");
         IStore store = instantiateConfiguredStore(props, server.getDbScheduler(), server);
         if (store == null) {
+        	System.out.println("Can't start the persistence layer");
             throw new IllegalArgumentException("Can't start the persistence layer");
         }
         return store;
@@ -352,8 +350,8 @@ public class Server {
         String serverIp = getServerIp(config);
 
         String hzConfigPath = config.getProperty(BrokerConstants.HAZELCAST_CONFIGURATION);
-        String hzClientIp = config.getProperty(BrokerConstants.HAZELCAST_CLIENT_IP, "localhost");
-        String hzClientPort = config.getProperty(BrokerConstants.HAZELCAST_CLIENT_PORT, "5703");
+      //  String hzClientIp = config.getProperty(BrokerConstants.HAZELCAST_CLIENT_IP, "localhost");
+       // String hzClientPort = config.getProperty(BrokerConstants.HAZELCAST_CLIENT_PORT, "5703");
 
         if (hzConfigPath != null) {
             boolean isHzConfigOnClasspath = this.getClass().getClassLoader().getResource(hzConfigPath) != null;

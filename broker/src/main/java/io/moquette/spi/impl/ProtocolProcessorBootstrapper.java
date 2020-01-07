@@ -73,6 +73,7 @@ public class ProtocolProcessorBootstrapper {
      *            the server to init.
      * @return the processor created for the broker.
      */
+    
     public ProtocolProcessor init(IConfig props, List<? extends InterceptHandler> embeddedObservers,
             IAuthenticator authenticator, IAuthorizator authorizator, Server server, IStore store) {
         IMessagesStore messagesStore;

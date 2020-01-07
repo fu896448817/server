@@ -111,7 +111,6 @@ public class NettyAcceptor implements ServerAcceptor {
     @Override
     public void initialize(ProtocolProcessor processor, IConfig props, ISslContextCreator sslCtxCreator)
             throws IOException {
-    	System.out.println("Initializing Netty acceptor...");
         LOG.info("Initializing Netty acceptor...");
 
         nettySoBacklog = Integer.parseInt(props.getProperty(BrokerConstants.NETTY_SO_BACKLOG_PROPERTY_NAME, "128"));
@@ -128,13 +127,11 @@ public class NettyAcceptor implements ServerAcceptor {
         if (epoll) {
             // 由于目前只支持TCP MQTT， 所以bossGroup的线程数配置为1
             LOG.info("Netty is using Epoll");
-            System.out.println("BNetty is using Epoll");
             m_bossGroup = new EpollEventLoopGroup(1);
             m_workerGroup = new EpollEventLoopGroup();
             channelClass = EpollServerSocketChannel.class;
         } else {
             LOG.info("Netty is using NIO");
-            System.out.println("BNetty is using NIO");
             m_bossGroup = new NioEventLoopGroup(1);
             m_workerGroup = new NioEventLoopGroup();
             channelClass = NioServerSocketChannel.class;
@@ -351,12 +348,47 @@ public class NettyAcceptor implements ServerAcceptor {
     }
     
     
-    private void initializeWebSocketTransport(final NettyMQTTHandler handler
+    private void initializeWebSocketTransport(final NettyMQTTHandler handler, IConfig props) throws IOException {
+        LOG.info("Configuring Websocket MQTT transport");
+        String webSocketPortProp = props.getProperty(WEB_SOCKET_PORT_PROPERTY_NAME, DISABLED_PORT_BIND);
+        if (DISABLED_PORT_BIND.equals(webSocketPortProp)) {
+            // Do nothing no WebSocket configured
+            LOG.info("Property {} has been setted to {}. Websocket MQTT will be disabled",
+                BrokerConstants.WEB_SOCKET_PORT_PROPERTY_NAME, DISABLED_PORT_BIND);
+            return;
+        }
+        int port = Integer.parseInt(webSocketPortProp);
+
+        final MoquetteIdleTimeoutHandler timeoutHandler = new MoquetteIdleTimeoutHandler();
+
+        String host = props.getProperty(BrokerConstants.HOST_PROPERTY_NAME);
+        initFactory(host, port, "Websocket MQTT", new PipelineInitializer() {
+
+            @Override
+            void init(ChannelPipeline pipeline) {
+                pipeline.addLast(new HttpServerCodec());
+                pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
+                pipeline.addLast("webSocketHandler",
+                        new WebSocketServerProtocolHandler("/mqtt", MQTT_SUBPROTOCOL_CSV_LIST));
+                pipeline.addLast("ws2bytebufDecoder", new WebSocketFrameToByteBufDecoder());
+                pipeline.addLast("bytebuf2wsEncoder", new ByteBufToWebSocketFrameEncoder());
+                pipeline.addFirst("idleStateHandler", new IdleStateHandler(nettyChannelTimeoutSeconds, 0, 0));
+                pipeline.addAfter("idleStateHandler", "idleEventHandler", timeoutHandler);
+                pipeline.addFirst("bytemetrics", new BytesMetricsHandler(m_bytesMetricsCollector));
+                pipeline.addLast("decoder", new MqttDecoder());
+                pipeline.addLast("encoder", MqttEncoder.INSTANCE);
+                pipeline.addLast("metrics", new MessageMetricsHandler(m_metricsCollector));
+                pipeline.addLast("messageLogger", new MQTTMessageLogger());
+                pipeline.addLast("handler", handler);
+            }
+        });
+    }
+    
+  /*  private void initializeWebSocketTransport(final NettyMQTTHandler handler
             , IConfig props) {
         LOG.debug("Configuring Websocket MQTT transport");
         String webSocketPortProp = props.getProperty(WEB_SOCKET_PORT_PROPERTY_NAME, DISABLED_PORT_BIND);
         if (DISABLED_PORT_BIND.equals(webSocketPortProp)) {
-            // Do nothing no WebSocket configured
             LOG.info("Property {} has been setted to {}. Websocket MQTT will be disabled",
                      BrokerConstants.WEB_SOCKET_PORT_PROPERTY_NAME, DISABLED_PORT_BIND);
             return;
@@ -366,37 +398,27 @@ public class NettyAcceptor implements ServerAcceptor {
         final MoquetteIdleTimeoutHandler timeoutHandler = new MoquetteIdleTimeoutHandler();
 
         String host = props.getProperty(BrokerConstants.HOST_PROPERTY_NAME);
-        //String path = props.getProperty(BrokerConstants.WEB_SOCKET_PATH_PROPERTY_NAME, BrokerConstants.WEBSOCKET_PATH);
-        //int maxFrameSize = props.intProp(BrokerConstants.WEB_SOCKET_MAX_FRAME_SIZE_PROPERTY_NAME, 65536);
         initFactory(host, port, "Websocket MQTT", new PipelineInitializer() {
             @Override
             void init(ChannelPipeline pipeline) {
-               /* pipeline.addLast(new HttpServerCodec());
+                pipeline.addLast("httpEncoder", new HttpResponseEncoder());
+                pipeline.addLast("httpDecoder", new HttpRequestDecoder());
                 pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
                 pipeline.addLast("webSocketHandler",
-                        new WebSocketServerProtocolHandler(path, MQTT_SUBPROTOCOL_CSV_LIST, false, maxFrameSize));
+                        new WebSocketServerProtocolHandler("", MQTT_SUBPROTOCOL_CSV_LIST));
                 pipeline.addLast("ws2bytebufDecoder", new WebSocketFrameToByteBufDecoder());
                 pipeline.addLast("bytebuf2wsEncoder", new ByteBufToWebSocketFrameEncoder());
-                configureMQTTPipeline(pipeline, timeoutHandler, handler);*/
-                
                 pipeline.addFirst("idleStateHandler", new IdleStateHandler(nettyChannelTimeoutSeconds, 0, 0));
                 pipeline.addAfter("idleStateHandler", "idleEventHandler", timeoutHandler);
-                // pipeline.addLast("logger", new LoggingHandler("Netty", LogLevel.ERROR));
-                if (errorsCather.isPresent()) {
-                    pipeline.addLast("bugsnagCatcher", errorsCather.get());
-                }
                 pipeline.addFirst("bytemetrics", new BytesMetricsHandler(m_bytesMetricsCollector));
                 pipeline.addLast("decoder", new MqttDecoder());
                 pipeline.addLast("encoder", MqttEncoder.INSTANCE);
                 pipeline.addLast("metrics", new MessageMetricsHandler(m_metricsCollector));
                 pipeline.addLast("messageLogger", new MQTTMessageLogger());
-                if (metrics.isPresent()) {
-                    pipeline.addLast("wizardMetrics", metrics.get());
-                }
                 pipeline.addLast("handler", handler);
             }
         });
-    }
+    }*/
     
     
     private void configureMQTTPipeline(ChannelPipeline pipeline, MoquetteIdleTimeoutHandler timeoutHandler,
